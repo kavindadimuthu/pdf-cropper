@@ -1,5 +1,9 @@
-import fitz  # PyMuPDF
 import os
+import fitz  # PyMuPDF
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from tkinter import ttk
+
 
 def extract_slides_from_pdf(input_pdf, output_pdf, left_margin, right_margin, top_margin, bottom_margin, horizontal_gap, vertical_gap):
     doc = fitz.open(input_pdf)  # Open the input PDF
@@ -47,8 +51,7 @@ def extract_slides_from_pdf(input_pdf, output_pdf, left_margin, right_margin, to
     print(f"Slides extracted and saved into '{output_pdf}'")
 
 
-
-# Task 2: Process all PDFs in a folder
+# Your PDF processing function goes here
 def process_pdfs(input_folder, output_folder):
     # Ensure the output folder exists
     if not os.path.exists(output_folder):
@@ -75,10 +78,53 @@ def process_pdfs(input_folder, output_folder):
             )
             
             print(f"Saved output to {output_pdf}\n")  # Confirm saving
+    messagebox.showinfo("Success", "PDFs processed successfully!")
 
-# Define input and output folders
-input_folder = "./input"
-output_folder = "./output"
+# GUI for selecting folders and triggering processing
+def create_gui():
+    def browse_input_folder():
+        folder = filedialog.askdirectory()
+        input_folder_entry.delete(0, tk.END)
+        input_folder_entry.insert(0, folder)
+    
+    def browse_output_folder():
+        folder = filedialog.askdirectory()
+        output_folder_entry.delete(0, tk.END)
+        output_folder_entry.insert(0, folder)
+    
+    def start_processing():
+        input_folder = input_folder_entry.get()
+        output_folder = output_folder_entry.get()
+        
+        if not input_folder or not output_folder:
+            messagebox.showwarning("Input Error", "Please select both input and output folders.")
+            return
+        
+        process_pdfs(input_folder, output_folder)
 
-# Process all PDFs in the input folder
-process_pdfs(input_folder, output_folder)
+    # Main window
+    root = tk.Tk()
+    root.title("PDF Slide Extractor")
+
+    # Input folder selection
+    tk.Label(root, text="Input Folder:").grid(row=0, column=0, padx=10, pady=10, sticky="e")
+    input_folder_entry = tk.Entry(root, width=40)
+    input_folder_entry.grid(row=0, column=1, padx=10, pady=10)
+    browse_input_button = tk.Button(root, text="Browse", command=browse_input_folder)
+    browse_input_button.grid(row=0, column=2, padx=10, pady=10)
+
+    # Output folder selection
+    tk.Label(root, text="Output Folder:").grid(row=1, column=0, padx=10, pady=10, sticky="e")
+    output_folder_entry = tk.Entry(root, width=40)
+    output_folder_entry.grid(row=1, column=1, padx=10, pady=10)
+    browse_output_button = tk.Button(root, text="Browse", command=browse_output_folder)
+    browse_output_button.grid(row=1, column=2, padx=10, pady=10)
+
+    # Start button
+    start_button = ttk.Button(root, text="Start Processing", command=start_processing)
+    start_button.grid(row=2, column=0, columnspan=3, pady=20)
+
+    root.mainloop()
+
+# Call the function to create the GUI
+create_gui()
