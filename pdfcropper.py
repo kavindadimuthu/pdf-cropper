@@ -167,6 +167,17 @@ def create_illustration(canvas, horizontal_gap=31, vertical_gap=50):
 
 
 def create_gui():
+    def browse_input_folder():
+        folder = filedialog.askdirectory()
+        input_folder_entry.delete(0, tk.END)
+        input_folder_entry.insert(0, folder)
+    
+    def browse_output_folder():
+        folder = filedialog.askdirectory()
+        output_folder_entry.delete(0, tk.END)
+        output_folder_entry.insert(0, folder)
+
+
     global root
     root = tk.Tk()
     root.title("PDF Slide Extractor")
@@ -175,12 +186,12 @@ def create_gui():
     tk.Label(root, text="Input Folder:").grid(row=0, column=0, sticky='e')
     input_folder_entry = tk.Entry(root)
     input_folder_entry.grid(row=0, column=1)
-    tk.Button(root, text="Browse Input Folder", command=lambda: select_folder(input_folder_entry)).grid(row=0, column=2)
+    tk.Button(root, text="Browse Input Folder", command=browse_input_folder).grid(row=0, column=2)
 
     tk.Label(root, text="Output Folder:").grid(row=1, column=0, sticky='e')
     output_folder_entry = tk.Entry(root)
     output_folder_entry.grid(row=1, column=1)
-    tk.Button(root, text="Browse Output Folder", command=lambda: select_folder(output_folder_entry)).grid(row=1, column=2)
+    tk.Button(root, text="Browse Output Folder", command=browse_output_folder).grid(row=1, column=2)
 
     # Margins and Gap Settings
     tk.Label(root, text="Left Margin:").grid(row=2, column=0, sticky='e')
@@ -225,19 +236,27 @@ def create_gui():
     columns_entry.grid(row=9, column=1)
 
     # User Manual
-    show_user_manual()
+    #show_user_manual()
 
     # Illustration Canvas
     illustration_canvas = tk.Canvas(root, width=400, height=500, bg='white')
     illustration_canvas.grid(row=0, column=3, rowspan=10, padx=20)
     create_illustration(illustration_canvas)
 
-    # Process Button
-    tk.Button(root, text="Process PDFs", command=lambda: process_pdfs(input_folder_entry, output_folder_entry, 
-                                                                     left_margin_entry, right_margin_entry, 
-                                                                     top_margin_entry, bottom_margin_entry, 
-                                                                     horizontal_gap_entry, vertical_gap_entry, 
-                                                                     rows_entry, columns_entry)).grid(row=10, column=0, columnspan=2, pady=10)
+    # Process PDFs Button
+    tk.Button(root, text="Process PDFs", command=lambda: process_pdfs(
+        input_folder_entry.get(),
+        output_folder_entry.get(),
+        int(rows_entry.get()),
+        int(columns_entry.get()),
+        int(left_margin_entry.get()),
+        int(right_margin_entry.get()),
+        int(top_margin_entry.get()),
+        int(bottom_margin_entry.get()),
+        int(horizontal_gap_entry.get()),
+        int(vertical_gap_entry.get())
+    )).grid(row=10, column=0, columnspan=2, pady=10)
+
 
     root.mainloop()
 
